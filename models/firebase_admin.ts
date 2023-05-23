@@ -11,6 +11,8 @@ interface Config {
 export default class FirebaseAdmin {
   public static instance: FirebaseAdmin;
 
+  private init = false;
+
   public static getInstance(): FirebaseAdmin {
     if (FirebaseAdmin.instance === undefined || FirebaseAdmin.instance === null) {
       // 초기화 진행
@@ -22,25 +24,7 @@ export default class FirebaseAdmin {
     return FirebaseAdmin.instance;
   }
 
-  private bootstrap(): void {
-    const haveApp = admin.apps.length !== 0;
-    if (haveApp) {
-      this.init = true;
-      return;
-    }
-    const config: Config = {
-      credential: {
-        projectId: process.env.projectId || '',
-        clientEmail: process.env.clientEmail || '',
-        privateKey: (process.env.privateKey || '').replace(/\\n/g, '\n'),
-      },
-    };
-    admin.initializeApp({ credential: admin.credential.cert(config.credential) });
-    console.info('bootstrap firebase admin');
-  }
-
-  /** firebase를 반환 */
-  public get Firebase(): FirebaseFirestore.Firestore {
+  public get Firestore(): FirebaseFirestore.Firestore {
     if (this.init === false) {
       this.bootstrap();
     }
@@ -52,5 +36,22 @@ export default class FirebaseAdmin {
       this.bootstrap();
     }
     return admin.auth();
+  }
+
+  private bootstrap(): void {
+    const haveApp = admin.apps.length !== 0;
+    if (haveApp) {
+      this.init = true;
+      return;
+    }
+    const config: Config = {
+      credential: {
+        privateKey: (process.env.privateKey || '').replace(/\\n/g, '\n'),
+        clientEmail: process.env.clientEmail || '',
+        projectId: process.env.projectId || '',
+      },
+    };
+    admin.initializeApp({ credential: admin.credential.cert(config.credential) });
+    console.info('bootstrap firebase admin');
   }
 }
