@@ -1,11 +1,24 @@
 import { ServiceLayout } from '@/components/service_layout';
 import { InAuthUser } from '@/models/in_auth_user';
-import { Avatar, Box, Button, Flex, FormControl, FormLabel, Switch, Text, Textarea, useToast } from '@chakra-ui/react';
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Switch,
+  Text,
+  Textarea,
+  VStack,
+  useToast,
+} from '@chakra-ui/react';
 import { GetServerSideProps, NextPage } from 'next';
 import { useState } from 'react';
 import ResizeTextarea from 'react-textarea-autosize';
 import axios, { AxiosResponse } from 'axios';
 import { useAuth } from '@/context/auth_user.context';
+import MessageItem from '@/components/message_item';
 
 interface Props {
   userInfo: InAuthUser | null;
@@ -165,6 +178,10 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
             </FormLabel>
           </FormControl>
         </Box>
+        <VStack spacing="12px" mt="6">
+          <MessageItem />
+          <MessageItem />
+        </VStack>
       </Box>
     </ServiceLayout>
   );
