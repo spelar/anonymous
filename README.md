@@ -4,3 +4,5 @@
 - Firebase Firestore
 - Next
 - TypeScript
+- Chakra-ui
+- Axios
