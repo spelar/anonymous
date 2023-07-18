@@ -71,6 +71,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
   const toast = useToast();
   const [message, setMessage] = useState('');
   const [messageList, setMessageList] = useState<InMessage[]>([]);
+  const [messageListFetchTrigger, setMessageListFetchTrigger] = useState(false);
   const [isAnonymous, setAnonymous] = useState(true);
   const { authUser } = useAuth();
 
@@ -91,7 +92,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
       return;
     }
     fetchMessageList(userInfo.uid);
-  }, [userInfo]);
+  }, [userInfo, messageListFetchTrigger]);
 
   if (userInfo === null) {
     return <p>사용자를 찾을 수 없습니다.</p>;
@@ -212,6 +213,9 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
                 displayName={userInfo.displayName ?? ''}
                 photoURL={userInfo.photoURL ?? 'https://bit.ly/broken-link'}
                 isOwner={isOwner}
+                onSendComplete={() => {
+                  setMessageListFetchTrigger((prev) => !prev);
+                }}
               />
             );
           })}
