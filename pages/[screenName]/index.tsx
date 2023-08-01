@@ -24,6 +24,7 @@ import { useQuery } from 'react-query';
 
 interface Props {
   userInfo: InAuthUser | null;
+  screenName: string;
 }
 
 async function postMessage({
@@ -68,7 +69,7 @@ async function postMessage({
   }
 }
 
-const UserHomePage: NextPage<Props> = function ({ userInfo }) {
+const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
   const toast = useToast();
   const [message, setMessage] = useState('');
   const [page, setPage] = useState(1);
@@ -245,6 +246,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo }) {
                 item={messageData}
                 uid={userInfo.uid}
                 displayName={userInfo.displayName ?? ''}
+                screenName={screenName}
                 photoURL={userInfo.photoURL ?? 'https://bit.ly/broken-link'}
                 isOwner={isOwner}
                 onSendComplete={() => {
@@ -277,25 +279,28 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
     return {
       props: {
         userInfo: null,
+        screenName: '',
       },
     };
   }
+  const screenNameToStr = Array.isArray(screenName) ? screenName[0] : screenName;
   try {
     const protocol = process.env.PROTOCOL || 'http';
     const host = process.env.HOST || 'localhost';
     const port = process.env.PORT || '3000';
     const baseUrl = `${protocol}://${host}:${port}`;
     const userInfoResp: AxiosResponse<InAuthUser> = await axios(`${baseUrl}/api/user.info/${screenName}`);
-    console.info(userInfoResp.data);
     return {
       props: {
         userInfo: userInfoResp.data ?? null,
+        screenName: screenNameToStr,
       },
     };
   } catch (err) {
     return {
       props: {
         userInfo: null,
+        screenName: '',
       },
     };
   }
