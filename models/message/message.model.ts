@@ -1,12 +1,11 @@
+import { firestore } from 'firebase-admin';
 import CustomServerError from '@/controllers/error/custom_server_error';
 import FirebaseAdmin from '../firebase_admin';
-import { firestore } from 'firebase-admin';
 import { InMessage, InMessageServer } from './in_message';
 import { InAuthUser } from '../in_auth_user';
 
 const MEMBER_COL = 'members';
 const MSG_COL = 'messages';
-const SCR_NAME_COL = 'screen_names';
 
 const { Firestore } = FirebaseAdmin.getInstance();
 
@@ -27,7 +26,7 @@ async function post({
     let messageCount = 1;
     const memberDoc = await transaction.get(memberRef);
     if (memberDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 사용자' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 사용자' });
     }
     const memberInfo = memberDoc.data() as InAuthUser & { messageCount?: number };
     if (memberInfo.messageCount !== undefined) {
@@ -62,10 +61,10 @@ async function updateMessage({ uid, messageId, deny }: { uid: string; messageId:
     const memberDoc = await transaction.get(memberRef);
     const messageDoc = await transaction.get(messageRef);
     if (memberDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 사용자' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 사용자' });
     }
     if (messageDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 문서' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 문서' });
     }
     await transaction.update(messageRef, { deny });
     const messageData = messageDoc.data() as InMessageServer;
@@ -85,17 +84,15 @@ async function list({ uid }: { uid: string }) {
   const listData = await Firestore.runTransaction(async (transaction) => {
     const memberDoc = await transaction.get(memberRef);
     if (memberDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 사용자' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 사용자' });
     }
-    const messageCol = memberRef.collection(MSG_COL).orderBy('messageNo', 'desc');
+    const messageCol = memberRef.collection(MSG_COL).orderBy('createAt', 'desc');
     const messageColDoc = await transaction.get(messageCol);
     const data = messageColDoc.docs.map((mv) => {
       const docData = mv.data() as Omit<InMessageServer, 'id'>;
-      const isDeny = docData.deny !== undefined && docData.deny === true;
       const returnData = {
         ...docData,
         id: mv.id,
-        message: isDeny ? '비공개 처리된 메시지 입니다.' : docData.message,
         createAt: docData.createAt.toDate().toISOString(),
         replyAt: docData.replyAt ? docData.replyAt.toDate().toISOString() : undefined,
       } as InMessage;
@@ -111,7 +108,7 @@ async function listWithPage({ uid, page = 1, size = 10 }: { uid: string; page?: 
   const listData = await Firestore.runTransaction(async (transaction) => {
     const memberDoc = await transaction.get(memberRef);
     if (memberDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 사용자' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 사용자' });
     }
     const memberInfo = memberDoc.data() as InAuthUser & { messageCount?: number };
     const { messageCount = 0 } = memberInfo;
@@ -132,9 +129,11 @@ async function listWithPage({ uid, page = 1, size = 10 }: { uid: string; page?: 
     const messageColDoc = await transaction.get(messageCol);
     const data = messageColDoc.docs.map((mv) => {
       const docData = mv.data() as Omit<InMessageServer, 'id'>;
+      const isDeny = docData.deny !== undefined && docData.deny === true;
       const returnData = {
         ...docData,
         id: mv.id,
+        message: isDeny ? '비공개 처리된 메시지 입니다.' : docData.message,
         createAt: docData.createAt.toDate().toISOString(),
         replyAt: docData.replyAt ? docData.replyAt.toDate().toISOString() : undefined,
       } as InMessage;
@@ -158,10 +157,10 @@ async function get({ uid, messageId }: { uid: string; messageId: string }) {
     const memberDoc = await transaction.get(memberRef);
     const messageDoc = await transaction.get(messageRef);
     if (memberDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 사용자' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 사용자' });
     }
     if (messageDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 문서' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 문서' });
     }
     const messageData = messageDoc.data() as InMessageServer;
     const isDeny = messageData.deny !== undefined && messageData.deny === true;
@@ -183,10 +182,10 @@ async function postReply({ uid, messageId, reply }: { uid: string; messageId: st
     const memberDoc = await transaction.get(memberRef);
     const messageDoc = await transaction.get(messageRef);
     if (memberDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 사용자' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 사용자' });
     }
     if (messageDoc.exists === false) {
-      throw new CustomServerError({ statusCode: 400, message: '존재하지 않는 문서' });
+      throw new CustomServerError({ statusCode: 400, message: '존재하지않는 문서' });
     }
     const messageData = messageDoc.data() as InMessageServer;
     if (messageData.reply !== undefined) {
