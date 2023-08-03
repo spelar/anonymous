@@ -1,13 +1,13 @@
-import { ServiceLayout } from '@/components/service_layout';
-import { InAuthUser } from '@/models/in_auth_user';
 import { Avatar, Box, Flex, Text, Button } from '@chakra-ui/react';
 import { GetServerSideProps, NextPage } from 'next';
+import Link from 'next/link';
 import { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
+import { ServiceLayout } from '@/components/service_layout';
+import { InAuthUser } from '@/models/in_auth_user';
 import { useAuth } from '@/context/auth_user.context';
 import MessageItem from '@/components/message_item';
 import { InMessage } from '@/models/message/in_message';
-import Link from 'next/link';
 
 interface Props {
   userInfo: InAuthUser | null;

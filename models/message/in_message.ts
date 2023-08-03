@@ -8,7 +8,7 @@ interface MessageBase {
     displayName: string;
     photoURL?: string;
   };
-	deny?: boolean;
+  deny?: boolean;
 }
 
 export interface InMessage extends MessageBase {
@@ -18,5 +18,5 @@ export interface InMessage extends MessageBase {
 
 export interface InMessageServer extends MessageBase {
   createAt: firestore.Timestamp;
-  replyAt?: firestore.Timestamp;;
+  replyAt?: firestore.Timestamp;
 }

@@ -1,5 +1,3 @@
-import { ServiceLayout } from '@/components/service_layout';
-import { InAuthUser } from '@/models/in_auth_user';
 import {
   Avatar,
   Box,
@@ -14,13 +12,15 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { GetServerSideProps, NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ResizeTextarea from 'react-textarea-autosize';
+import { useQuery } from 'react-query';
 import axios, { AxiosResponse } from 'axios';
+import { ServiceLayout } from '@/components/service_layout';
+import { InAuthUser } from '@/models/in_auth_user';
 import { useAuth } from '@/context/auth_user.context';
 import MessageItem from '@/components/message_item';
 import { InMessage } from '@/models/message/in_message';
-import { useQuery } from 'react-query';
 
 interface Props {
   userInfo: InAuthUser | null;
@@ -104,6 +104,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
   useQuery(
     messageListQueryKey,
     async () =>
+      // eslint-disable-next-line no-return-await
       await axios.get<{
         totalElements: number;
         totalPages: number;
@@ -239,22 +240,20 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
           </FormControl>
         </Box>
         <VStack spacing="12px" mt="6">
-          {messageList.map((messageData) => {
-            return (
-              <MessageItem
-                key={`message-item-${userInfo.uid}-${messageData.id}`}
-                item={messageData}
-                uid={userInfo.uid}
-                displayName={userInfo.displayName ?? ''}
-                screenName={screenName}
-                photoURL={userInfo.photoURL ?? 'https://bit.ly/broken-link'}
-                isOwner={isOwner}
-                onSendComplete={() => {
-                  fetchMessageInfo({ uid: userInfo.uid, messageId: messageData.id });
-                }}
-              />
-            );
-          })}
+          {messageList.map((messageData) => (
+            <MessageItem
+              key={`message-item-${userInfo.uid}-${messageData.id}`}
+              item={messageData}
+              uid={userInfo.uid}
+              screenName={screenName}
+              displayName={userInfo.displayName ?? ''}
+              photoURL={userInfo.photoURL ?? 'https://bit.ly/broken-link'}
+              isOwner={isOwner}
+              onSendComplete={() => {
+                fetchMessageInfo({ uid: userInfo.uid, messageId: messageData.id });
+              }}
+            />
+          ))}
         </VStack>
         {totalPages > page && (
           <Button

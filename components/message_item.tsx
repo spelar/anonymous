@@ -1,5 +1,3 @@
-import { InMessage } from '@/models/message/in_message';
-import convertDateToString from '@/utils/convert_date_to_string';
 import {
   Avatar,
   Box,
@@ -16,8 +14,10 @@ import {
   Textarea,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
 import ResizeTextarea from 'react-textarea-autosize';
+import { useState } from 'react';
+import { InMessage } from '@/models/message/in_message';
+import convertDateToString from '@/utils/convert_date_to_string';
 import MoreBtnIcon from './more_btn_icon';
 import FirebaseClient from '@/models/firebase_client';
 
@@ -56,6 +56,7 @@ const MessageItem = function ({ uid, screenName, displayName, photoURL, isOwner,
       toast({
         title: '로그인한 사용자만 사용할 수 있는 메뉴입니다.',
       });
+      return;
     }
     const resp = await fetch('/api/messages.deny', {
       method: 'PUT',
@@ -96,6 +97,7 @@ const MessageItem = function ({ uid, screenName, displayName, photoURL, isOwner,
                 width="24px"
                 height="24px"
                 borderRadius="full"
+                variant="link"
                 size="xs"
               />
               <MenuList>
@@ -161,8 +163,8 @@ const MessageItem = function ({ uid, screenName, displayName, photoURL, isOwner,
                   overflow="hidden"
                   fontSize="xs"
                   as={ResizeTextarea}
+                  placeholder="댓글을 입력하세요..."
                   value={reply}
-                  placeContent="댓글을 입력하세요..."
                   onChange={(e) => {
                     setReply(e.currentTarget.value);
                   }}
@@ -171,7 +173,7 @@ const MessageItem = function ({ uid, screenName, displayName, photoURL, isOwner,
               <Button
                 disabled={reply.length === 0}
                 colorScheme="pink"
-                bgColor="#ff75b5"
+                bgColor="#FF75B5"
                 variant="solid"
                 size="sm"
                 onClick={() => {
