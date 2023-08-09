@@ -8,17 +8,17 @@ import {
   Switch,
   Text,
   Textarea,
-  VStack,
   useToast,
+  VStack,
 } from '@chakra-ui/react';
 import { GetServerSideProps, NextPage } from 'next';
-import { useState } from 'react';
 import ResizeTextarea from 'react-textarea-autosize';
-import { useQuery } from 'react-query';
+import { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
+import { useQuery } from 'react-query';
 import { ServiceLayout } from '@/components/service_layout';
-import { InAuthUser } from '@/models/in_auth_user';
 import { useAuth } from '@/context/auth_user.context';
+import { InAuthUser } from '@/models/in_auth_user';
 import MessageItem from '@/components/message_item';
 import { InMessage } from '@/models/message/in_message';
 
@@ -70,15 +70,14 @@ async function postMessage({
 }
 
 const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
-  const toast = useToast();
   const [message, setMessage] = useState('');
+  const [isAnonymous, setAnonymous] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [messageList, setMessageList] = useState<InMessage[]>([]);
   const [messageListFetchTrigger, setMessageListFetchTrigger] = useState(false);
-  const [isAnonymous, setAnonymous] = useState(true);
+  const toast = useToast();
   const { authUser } = useAuth();
-
   async function fetchMessageInfo({ uid, messageId }: { uid: string; messageId: string }) {
     try {
       const resp = await fetch(`/api/messages.info?uid=${uid}&messageId=${messageId}`);
@@ -98,9 +97,7 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
       console.error(err);
     }
   }
-
   const messageListQueryKey = ['messageList', userInfo?.uid, page, messageListFetchTrigger];
-
   useQuery(
     messageListQueryKey,
     async () =>
@@ -125,15 +122,12 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
       },
     },
   );
-
   if (userInfo === null) {
     return <p>사용자를 찾을 수 없습니다.</p>;
   }
-
   const isOwner = authUser !== null && authUser.uid === userInfo.uid;
-
   return (
-    <ServiceLayout title={`${userInfo.displayName}의 홈`} minH="100vh" backgroundColor="gray.200">
+    <ServiceLayout title={`${userInfo.displayName}의 홈`} minH="100vh" backgroundColor="gray.50">
       <Box maxW="md" mx="auto" pt="6">
         <Box borderWidth="1px" borderRadius="lg" overflow="hidden" mb="2" bg="white">
           <Flex p="6">
@@ -154,21 +148,18 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
             <Textarea
               bg="gray.100"
               border="none"
-              boxShadow="none !important"
-              placeholder="익명으로 질문할 내용을 입력해주세요"
-              borderRadius="md"
+              placeholder="무엇이 궁금한가요?"
               resize="none"
               minH="unset"
-              minRows={1}
-              maxRows={7}
               overflow="hidden"
               fontSize="xs"
               mr="2"
+              maxRows={7}
               as={ResizeTextarea}
               value={message}
               onChange={(e) => {
-                if (e.target.value) {
-                  const lineCount = (e.target.value.match(/[^\n]*\n[^\n]*/gi)?.length ?? 1) + 1;
+                if (e.currentTarget.value) {
+                  const lineCount = (e.currentTarget.value.match(/[^\n]*\n[^\n]*/gi)?.length ?? 1) + 1;
                   if (lineCount > 7) {
                     toast({
                       title: '최대 7줄까지만 입력가능합니다',
@@ -177,12 +168,12 @@ const UserHomePage: NextPage<Props> = function ({ userInfo, screenName }) {
                     return;
                   }
                 }
-                setMessage(e.target.value);
+                setMessage(e.currentTarget.value);
               }}
             />
             <Button
               disabled={message.length === 0}
-              bgColor="#FFb86c"
+              bgColor="#FFB86C"
               color="white"
               colorScheme="yellow"
               variant="solid"
@@ -296,6 +287,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ query }) =
       },
     };
   } catch (err) {
+    console.error(err);
     return {
       props: {
         userInfo: null,
