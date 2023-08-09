@@ -10,3 +10,4 @@
 - TypeScript
 - Chakra-ui
 - Axios
+- React-Query
