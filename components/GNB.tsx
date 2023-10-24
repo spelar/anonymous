@@ -51,7 +51,7 @@ const GNB = function () {
       <Flex minH="60px" py={{ base: 2 }} px={{ base: 4 }} align="center" maxW="md" mx="auto">
         <Spacer />
         <Box flex="1">
-          <button onClick={onImageLogoClick}>
+          <button type="button" onClick={onImageLogoClick}>
             <img style={{ height: '40px' }} src="/logo.svg" alt="logo" />
           </button>
         </Box>
