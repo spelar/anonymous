@@ -51,14 +51,9 @@ const GNB = function () {
       <Flex minH="60px" py={{ base: 2 }} px={{ base: 4 }} align="center" maxW="md" mx="auto">
         <Spacer />
         <Box flex="1">
-          <img
-            style={{ height: '40px' }}
-            src="/logo.svg"
-            alt="logo"
-            onClick={onImageLogoClick}
-            role="button"
-            tabIndex={0}
-          />
+          <button onClick={onImageLogoClick}>
+            <img style={{ height: '40px' }} src="/logo.svg" alt="logo" />
+          </button>
         </Box>
         <Box justifyContent="flex-end">{authInitialized ? loginBtn : logoutBtn}</Box>
       </Flex>
