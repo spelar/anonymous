@@ -7,6 +7,7 @@
 - Firebase Authentication
 - Firebase Firestore
 - Next
+- React
 - TypeScript
 - Chakra-ui
 - Axios
